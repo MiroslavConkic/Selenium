@@ -7,7 +7,7 @@ import org.testng.Assert;
 import org.testng.annotations.*;
 import java.time.Duration;
 
-public class Selenium7Anotations {
+public class Selenium7Annotations {
 
     WebDriver driver;
 
