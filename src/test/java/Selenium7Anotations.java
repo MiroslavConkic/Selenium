@@ -13,16 +13,15 @@ public class Selenium7Anotations {
 
     @BeforeClass
     public void beforeClass(){
-
+        WebDriverManager.chromedriver().driverVersion("156.0.8078.79").setup();
+        driver = new ChromeDriver();
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
     }
 
     @BeforeMethod
     public void beforeMethod(){
         //Setting prerequisites
-        WebDriverManager.chromedriver().driverVersion("156.0.8078.79").setup();
-        driver = new ChromeDriver();
         driver.manage().window().maximize();
-        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
         driver.navigate().to("https://www.amazon.com/Selenium-Framework-Design-Data-Driven-Testing/dp/1788473574/ref=sr_1_2?dchild=1&keywords=selenium+test&qid=1631829742&sr=8-2");
         // Checking if cart is empty
         WebElement navCartCount = driver.findElement(By.id("nav-cart-count"));
@@ -33,8 +32,6 @@ public class Selenium7Anotations {
         Assert.assertEquals(emptyCartPage.getText(), "Your Amazon Cart is empty");
         // Go back to product page
         driver.navigate().back();
-
-
     }
 
     @Test
@@ -51,6 +48,7 @@ public class Selenium7Anotations {
         WebElement navCartCount = driver.findElement(By.id("nav-cart-count"));
         Assert.assertEquals(navCartCount.getText(), "1");
         navCartCount.click();
+        // Checking cart page to see if item name is correct
         Assert.assertEquals(driver.getCurrentUrl(), "https://www.amazon.com/gp/cart/view.html?ref_=nav_cart");
         WebElement productName = driver.findElement(By.cssSelector(".a-truncate.sc-grid-item-product-title.a-size-base-plus"));
         Assert.assertEquals(productName.getText(), expectedItemName);
