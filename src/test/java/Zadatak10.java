@@ -7,70 +7,94 @@ import org.testng.Assert;
 import org.testng.annotations.*;
 
 import java.time.Duration;
+import java.util.List;
 
 public class Zadatak10 {
-
     WebDriver driver;
-    String userFirstName = "Ime";
-    String userLastName = "Prezime";
-    String userEmailAddress = "test@test.com";
-    String userSalary = "4000";
-    String userAge = "40";
-    String userDepartment = "Department2";
-
     @BeforeClass
-    public void setUp(){
-        //WebDriverManager.chromedriver().driverVersion().setup();
-    }
-    @BeforeMethod
-    public void pageSetUp(){
+    public void setUp() {
+        WebDriverManager.chromedriver().setup();
         driver = new ChromeDriver();
         driver.manage().window().maximize();
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
-        driver.navigate().to("https://demoqa.com/");
+        driver.navigate().to("https://demoqa.com");
     }
+
+    @BeforeMethod
+    public void pageSetUp() {
+        List<WebElement> cards = driver.findElements(By.className("card-body"));
+        for (int i = 0; i < cards.size(); i++) {
+            if (cards.get(i).getText().equals("Elements")) {
+                cards.get(i).click();
+                break;
+            }
+        }
+        List<WebElement> sidebarButtons = driver.findElements(By.className("text"));
+        for (int i = 0; i < sidebarButtons.size(); i++) {
+            if (sidebarButtons.get(i).getText().equals("Web Tables")) {
+                sidebarButtons.get(i).click();
+                break;
+            }
+        }
+        WebElement table = driver.findElement(By.tagName("tbody"));
+        List<WebElement> tableRows = table.findElements(By.tagName("tr"));
+        Assert.assertEquals(tableRows.size(), 3);
+    }
+
     @Test
-    public void addToWebTable(){
-        WebElement elementsLink = driver.findElement(By.cssSelector("a[href='/elements']"));
-        elementsLink.click();
-        WebElement webTablesLink = driver.findElement(By.cssSelector("a[href='/webtables']"));
-        webTablesLink.click();
+    public void userCanAddRecords() {
         WebElement addButton = driver.findElement(By.id("addNewRecordButton"));
         addButton.click();
-        WebElement firstName = driver.findElement(By.id("firstName"));
-        firstName.clear();
-        firstName.sendKeys(userFirstName);
-        WebElement lastName = driver.findElement(By.id("lastName"));
-        lastName.clear();
-        lastName.sendKeys(userLastName);
-        WebElement userEmail = driver.findElement(By.id("userEmail"));
-        userEmail.clear();
-        userEmail.sendKeys(userEmailAddress);
-        WebElement age = driver.findElement(By.id("age"));
-        age.clear();
-        age.sendKeys(userAge);
-        WebElement salary = driver.findElement(By.id("salary"));
-        salary.clear();
-        salary.sendKeys(userSalary);
-        WebElement department = driver.findElement(By.id("department"));
-        department.clear();
-        department.sendKeys(userDepartment);
+
+        WebElement firstNameField = driver.findElement(By.id("firstName"));
+        WebElement lastNameField = driver.findElement(By.id("lastName"));
+        WebElement emailAddress = driver.findElement(By.id("userEmail"));
+        WebElement ageField = driver.findElement(By.id("age"));
+        WebElement salaryField = driver.findElement(By.id("salary"));
+        WebElement departmentField = driver.findElement(By.id("department"));
         WebElement submitButton = driver.findElement(By.id("submit"));
+
+        String firstName = "Michael";
+        String lastName = "Scott";
+        String email = "m.scott@email.com";
+        String age = "46";
+        String salary = "120000";
+        String department = "Manager";
+
+        firstNameField.clear();
+        firstNameField.sendKeys("Michael");
+        lastNameField.clear();
+        lastNameField.sendKeys("Scott");
+        emailAddress.clear();
+        emailAddress.sendKeys("m.scott@email.com");
+        ageField.clear();
+        ageField.sendKeys("46");
+        salaryField.clear();
+        salaryField.sendKeys("120000");
+        departmentField.clear();
+        departmentField.sendKeys("Manager");
         submitButton.click();
 
-        WebElement tableContent = driver.findElement(By.cssSelector(".-striped.-highlight.table.table-striped.table-bordered.table-hover"));
-        System.out.println(tableContent.getText());
-
-        String userCompleteText = userFirstName+" "+userLastName+" "+userAge+" "+userEmailAddress+" "+userSalary+" "+userDepartment;
-        Assert.assertTrue(tableContent.getText().contains(userCompleteText));
-
+        WebElement table = driver.findElement(By.tagName("tbody"));
+        List<WebElement> tableRows = table.findElements(By.tagName("tr"));
+        Assert.assertEquals(tableRows.size(), 4);
+        Assert.assertTrue(tableRows.get(3).getText().contains(firstName));
+        Assert.assertTrue(tableRows.get(3).getText().contains(lastName));
+        Assert.assertTrue(tableRows.get(3).getText().contains(email));
+        Assert.assertTrue(tableRows.get(3).getText().contains(age));
+        Assert.assertTrue(tableRows.get(3).getText().contains(salary));
+        Assert.assertTrue(tableRows.get(3).getText().contains(department));
     }
+
     @AfterMethod
-    public void afterMethod(){
-        driver.manage().deleteAllCookies();
+    public void deleteRecord() {
+        WebElement deleteButton = driver.findElement(By.id("delete-record-4"));
+        deleteButton.click();
     }
+
     @AfterClass
-    public void afterClass(){
+    public void tearDown() {
         driver.quit();
     }
+
 }
